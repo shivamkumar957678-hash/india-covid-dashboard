@@ -1,12 +1,19 @@
 # =========================================================
 # INDIA COVID-19 DASHBOARD
-# FINAL ULTIMATE VERSION
+# FINAL LIVE VERSION
 # =========================================================
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
+from streamlit_autorefresh import st_autorefresh
+
+# =========================================================
+# AUTO REFRESH FOR LIVE TIME
+# =========================================================
+
+st_autorefresh(interval=1000, key="time_refresh")
 
 # =========================================================
 # PAGE CONFIG
@@ -67,7 +74,7 @@ width:330px !important;
 
 .sidebar-title{
 text-align:center;
-font-size:40px;
+font-size:38px;
 font-weight:bold;
 color:#00e5ff;
 text-shadow:0px 0px 20px #00e5ff;
@@ -95,7 +102,7 @@ box-shadow:0px 0px 25px #00e5ff;
 
 label{
 color:#00e5ff !important;
-font-size:20px !important;
+font-size:18px !important;
 font-weight:bold !important;
 }
 
@@ -144,7 +151,7 @@ color:white;
 }
 
 .big{
-font-size:30px;
+font-size:28px;
 font-weight:bold;
 }
 
@@ -293,46 +300,6 @@ else:
     908,807,18877,4100,
     5612,7165,7875,20377,
     6154,1603,2044,34112
-    ],
-
-    "Beds":[
-    85000,12000,35000,90000,
-    42000,10000,75000,50000,
-    25000,30000,95000,88000,
-    70000,120000,12000,15000,
-    10000,11000,60000,45000,
-    68000,8000,85000,65000,
-    12000,110000,20000,78000
-    ],
-
-    "Oxygen":[
-    91,88,90,89,
-    87,92,90,88,
-    86,87,93,94,
-    89,95,85,84,
-    83,82,90,88,
-    89,86,92,91,
-    85,94,87,90
-    ],
-
-    "lat":[
-    15.9129,28.2180,26.2006,25.0961,
-    21.2787,15.2993,22.2587,29.0588,
-    31.1048,23.6102,15.3173,10.8505,
-    22.9734,19.7515,24.6637,25.4670,
-    23.1645,26.1584,20.9517,31.1471,
-    27.0238,27.5330,11.1271,18.1124,
-    23.9408,26.8467,30.0668,22.9868
-    ],
-
-    "lon":[
-    79.7400,94.7278,92.9376,85.3131,
-    81.8661,74.1240,71.1924,76.0856,
-    77.1734,85.2799,75.7139,76.2711,
-    78.6569,75.7139,93.9063,91.3662,
-    92.9376,94.5624,85.0985,75.3412,
-    74.2179,88.5122,78.6569,79.0193,
-    91.9882,80.9462,79.0193,87.8550
     ]
     })
 
@@ -356,10 +323,16 @@ else:
         df["State"]
     )
 
-    st.sidebar.success("✅ Dashboard Running")
-    st.sidebar.info("🗺 Map Visualization")
-    st.sidebar.info("🏥 Hospital Beds")
-    st.sidebar.info("🫁 Oxygen Availability")
+    # =====================================================
+    # FILTER STATE DATA
+    # =====================================================
+
+    state_data = df[df["State"] == selected_state]
+
+    cases = int(state_data["Cases"].values[0])
+    recovered = int(state_data["Recovered"].values[0])
+    deaths = int(state_data["Deaths"].values[0])
+    active = int(state_data["Active"].values[0])
 
     # =====================================================
     # HEADER
@@ -387,25 +360,26 @@ else:
         """, unsafe_allow_html=True)
 
     # =====================================================
-    # CARDS
+    # SELECTED STATE DATA
     # =====================================================
 
-    total_cases = df["Cases"].sum()
-    recovered = df["Recovered"].sum()
-    deaths = df["Deaths"].sum()
-    active = df["Active"].sum()
+    st.markdown(f"""
+    <div class='heading'>
+    📍 {selected_state} COVID DATA
+    </div>
+    """, unsafe_allow_html=True)
 
-    a,b,c,d = st.columns(4)
+    s1,s2,s3,s4 = st.columns(4)
 
-    with a:
+    with s1:
         st.markdown(f"""
         <div class='card cyan'>
-        <h2>📈 TOTAL CASES</h2>
-        <div class='big'>{total_cases:,}</div>
+        <h2>📈 CASES</h2>
+        <div class='big'>{cases:,}</div>
         </div>
         """, unsafe_allow_html=True)
 
-    with b:
+    with s2:
         st.markdown(f"""
         <div class='card green'>
         <h2>💚 RECOVERED</h2>
@@ -413,7 +387,7 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-    with c:
+    with s3:
         st.markdown(f"""
         <div class='card pink'>
         <h2>💀 DEATHS</h2>
@@ -421,7 +395,7 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-    with d:
+    with s4:
         st.markdown(f"""
         <div class='card yellow'>
         <h2>🦠 ACTIVE</h2>
@@ -472,114 +446,16 @@ else:
     if st.button("ASK CHATBOT"):
 
         if "mask" in question.lower():
-            st.success("😷 Always wear a mask.")
+            st.success("😷 Always wear mask.")
 
         elif "covid" in question.lower():
-            st.success("🦠 Wash hands and stay safe.")
+            st.success("🦠 Wash hands regularly.")
 
         elif "vaccine" in question.lower():
-            st.success("💉 Vaccine reduces severe infection.")
-
-        elif "oxygen" in question.lower():
-            st.success("🫁 Oxygen level should stay above 95%.")
+            st.success("💉 Vaccine reduces infection risk.")
 
         else:
             st.success("✅ Stay safe and healthy.")
-
-    # =====================================================
-    # GRAPH
-    # =====================================================
-
-    st.markdown("<div class='heading'>📊 TOP COVID CASES</div>", unsafe_allow_html=True)
-
-    fig = px.bar(
-        df,
-        x="State",
-        y="Cases",
-        color="Cases",
-        color_continuous_scale="Turbo"
-    )
-
-    fig.update_layout(
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        height=600
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-    # =====================================================
-    # MAP
-    # =====================================================
-
-    st.markdown("<div class='heading'>🗺 INDIA MAP VISUALIZATION</div>", unsafe_allow_html=True)
-
-    map_fig = px.scatter_mapbox(
-        df,
-        lat="lat",
-        lon="lon",
-        size="Cases",
-        color="Cases",
-        hover_name="State",
-        hover_data=["Beds","Oxygen"],
-        zoom=3.5,
-        height=600,
-        color_continuous_scale="Turbo"
-    )
-
-    map_fig.update_layout(
-        mapbox_style="carto-darkmatter",
-        paper_bgcolor="#22388f",
-        font_color="white"
-    )
-
-    st.plotly_chart(map_fig, use_container_width=True)
-
-    # =====================================================
-    # HOSPITAL BEDS
-    # =====================================================
-
-    st.markdown("<div class='heading'>🏥 HOSPITAL BEDS</div>", unsafe_allow_html=True)
-
-    bed_fig = px.bar(
-        df,
-        x="State",
-        y="Beds",
-        color="Beds",
-        color_continuous_scale="Turbo"
-    )
-
-    bed_fig.update_layout(
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        height=600
-    )
-
-    st.plotly_chart(bed_fig, use_container_width=True)
-
-    # =====================================================
-    # OXYGEN
-    # =====================================================
-
-    st.markdown("<div class='heading'>🫁 OXYGEN AVAILABILITY</div>", unsafe_allow_html=True)
-
-    oxygen_fig = px.line(
-        df,
-        x="State",
-        y="Oxygen",
-        markers=True
-    )
-
-    oxygen_fig.update_layout(
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        height=600
-    )
-
-    st.plotly_chart(oxygen_fig, use_container_width=True)
 
     # =====================================================
     # TABLE
