@@ -1,13 +1,13 @@
 # =========================================================
-# INDIA COVID-19 DASHBOARD
+# INDIA COVID-19 ADVANCED DASHBOARD
 # Developed By Shivam Kumar
 # =========================================================
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from datetime import datetime
+import time
 
 # =========================================================
 # PAGE CONFIG
@@ -15,8 +15,30 @@ from datetime import datetime
 
 st.set_page_config(
     page_title="India COVID Dashboard",
+    page_icon="🦠",
     layout="wide"
 )
+
+# =========================================================
+# LOADING
+# =========================================================
+
+with st.spinner("Loading India COVID Dashboard..."):
+    time.sleep(2)
+
+# =========================================================
+# SESSION
+# =========================================================
+
+if "login" not in st.session_state:
+    st.session_state.login = False
+
+# =========================================================
+# LOGIN DATA
+# =========================================================
+
+USERNAME = "shivam"
+PASSWORD = "1234"
 
 # =========================================================
 # CSS
@@ -25,59 +47,50 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+/* MAIN */
+
 .stApp{
 background:#020f3a;
 color:white;
 }
 
-/* SIDEBAR */
+/* REMOVE WHITE BAR */
 
-section[data-testid="stSidebar"]{
-background:linear-gradient(#0a0066,#6a00ff);
+header{
+visibility:hidden;
 }
 
-.sidebar-title{
+[data-testid="stToolbar"]{
+display:none;
+}
+
+.block-container{
+padding-top:0rem;
+}
+
+/* LOGIN TITLE */
+
+.title{
 text-align:center;
-font-size:42px;
+font-size:70px;
 font-weight:bold;
 color:#00e5ff;
-text-shadow:0px 0px 15px #00e5ff;
+text-shadow:0px 0px 20px #00e5ff;
+margin-top:10px;
 }
 
-.menu{
-font-size:20px;
-font-weight:bold;
+/* LOGIN BOX */
+
+.login-box{
+background:#142b75;
+padding:40px;
+border-radius:25px;
+border:3px solid #00e5ff;
+box-shadow:0px 0px 30px #00e5ff;
 margin-top:20px;
-color:white;
 }
 
-/* SELECT BOX */
-
-div[data-baseweb="select"]{
-background:transparent !important;
-border:none !important;
-}
-
-div[data-baseweb="select"] > div{
-background:#142b75 !important;
-color:white !important;
-border:2px solid #00e5ff !important;
-border-radius:14px !important;
-min-height:60px !important;
-box-shadow:0px 0px 12px #00e5ff !important;
-}
-
-div[data-baseweb="select"] *{
-color:white !important;
-font-size:20px !important;
-font-weight:bold !important;
-}
-
-div[data-baseweb="select"] svg{
-fill:white !important;
-}
-
-/* LABEL */
+/* INPUT */
 
 label{
 color:#00e5ff !important;
@@ -85,14 +98,58 @@ font-size:22px !important;
 font-weight:bold !important;
 }
 
-/* INPUT */
-
-.stTextInput input{
+div[data-baseweb="input"]{
 background:#142b75 !important;
-color:white !important;
 border:2px solid #00e5ff !important;
-border-radius:14px !important;
-font-size:20px !important;
+border-radius:15px !important;
+}
+
+div[data-baseweb="input"] input{
+background:transparent !important;
+color:white !important;
+font-size:22px !important;
+text-align:center !important;
+}
+
+/* BUTTON */
+
+.stButton>button{
+width:100%;
+height:55px;
+font-size:22px;
+font-weight:bold;
+background:#00e5ff;
+color:black;
+border:none;
+border-radius:14px;
+margin-top:15px;
+transition:0.4s;
+}
+
+.stButton>button:hover{
+transform:scale(1.03);
+background:#00c3ff;
+}
+
+/* SIDEBAR */
+
+section[data-testid="stSidebar"]{
+background:linear-gradient(#050033,#6a00ff);
+animation: glow 3s infinite;
+}
+
+@keyframes glow{
+0%{box-shadow:0px 0px 10px #00e5ff;}
+50%{box-shadow:0px 0px 30px #00e5ff;}
+100%{box-shadow:0px 0px 10px #00e5ff;}
+}
+
+.sidebar-title{
+text-align:center;
+font-size:40px;
+font-weight:bold;
+color:#00e5ff;
+text-shadow:0px 0px 15px #00e5ff;
 }
 
 /* CARDS */
@@ -100,51 +157,62 @@ font-size:20px !important;
 .card{
 background:#22388f;
 padding:15px;
-border-radius:22px;
-height:180px;
+border-radius:20px;
+height:170px;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
+margin-top:10px;
 transition:0.4s;
-overflow:hidden;
 }
 
 .card:hover{
-transform:scale(1.03);
+transform:scale(1.05);
 }
 
 .card h2{
 font-size:20px;
-text-align:center;
 color:white;
-margin-top:8px;
 }
 
 .big{
-font-size:30px;
+font-size:32px;
 font-weight:bold;
-text-align:center;
 }
 
 .cyan{
 border:4px solid #00e5ff;
-box-shadow:0px 0px 25px #00e5ff;
+box-shadow:0px 0px 20px #00e5ff;
 }
 
 .green{
 border:4px solid #00ff66;
-box-shadow:0px 0px 25px #00ff66;
+box-shadow:0px 0px 20px #00ff66;
 }
 
 .pink{
 border:4px solid #ff2ca8;
-box-shadow:0px 0px 25px #ff2ca8;
+box-shadow:0px 0px 20px #ff2ca8;
 }
 
 .yellow{
 border:4px solid #ffd000;
-box-shadow:0px 0px 25px #ffd000;
+box-shadow:0px 0px 20px #ffd000;
+}
+
+/* MOBILE */
+
+@media screen and (max-width:768px){
+
+.title{
+font-size:35px !important;
+}
+
+.card{
+height:auto !important;
+}
+
 }
 
 /* FOOTER */
@@ -154,496 +222,283 @@ text-align:center;
 font-size:30px;
 font-weight:bold;
 color:#00e5ff;
-margin-top:50px;
+margin-top:40px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# SIDEBAR
+# LOGIN PAGE
 # =========================================================
 
-st.sidebar.markdown("""
-<div class='sidebar-title'>
-🦠 COVID-19
-</div>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("## INDIA DASHBOARD")
-
-st.sidebar.markdown("""
-<div class='menu'>
-🔴 Dashboard<br><br>
-⚪ Vaccination<br><br>
-⚪ Prediction<br><br>
-⚪ About
-</div>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("---")
-
-st.sidebar.markdown("""
-# 🛡 SAFETY TIPS
-
-✅ Wear Mask
-
-💧 Wash Hands
-
-↔ Keep Distance
-
-❤️ Stay Safe
-""")
-
-# =========================================================
-# STATES
-# =========================================================
-
-states = [
-"Maharashtra","Kerala","Karnataka","Tamil Nadu",
-"Andhra Pradesh","Uttar Pradesh","Delhi","West Bengal",
-"Chhattisgarh","Rajasthan","Bihar","Odisha",
-"Punjab","Haryana","Gujarat","Jharkhand",
-"Assam","Goa","Manipur","Mizoram",
-"Nagaland","Sikkim","Tripura","Meghalaya",
-"Arunachal Pradesh","Uttarakhand","Madhya Pradesh","Telangana"
-]
-
-# =========================================================
-# REAL YEAR DATA
-# =========================================================
-
-data = {
-"State":states,
-
-"Cases_2021":[
-6363442,4711455,2996301,2615417,
-2074104,1703619,1430932,1557421,
-1003356,953851,726279,1016763,
-601800,770114,824029,348226,
-598460,181847,125785,13757,
-31213,32048,84459,93775,
-55310,342462,792619,668706
-],
-
-"Cases_2022":[
-7985210,6532120,4055448,3456621,
-2455000,2123000,1985221,1895320,
-1200300,1285220,1045110,1300112,
-820552,955220,1236520,442100,
-745220,245221,155221,25000,
-45110,45500,101552,120522,
-70000,502210,1104552,855000
-],
-
-"Cases_2023":[
-8232964,7012255,4309996,3690213,
-2655112,2300455,2120755,2012555,
-1302110,1407557,1125110,1455222,
-910255,1050112,1325222,502222,
-820111,265110,170522,33000,
-52000,50000,122000,132000,
-85000,560000,1200112,902211
-],
-
-"Recovered":[
-7850215,6824620,4258851,3956618,
-2567497,2333251,2201212,1855327,
-1294511,1332417,1055000,1380000,
-890000,990000,1250000,490000,
-800000,250000,160000,31000,
-49000,47000,118000,120000,
-82000,540000,1180000,880000
-],
-
-"Deaths":[
-73892,7599,27027,25720,
-7152,12092,11134,10789,
-5413,2728,12500,7200,
-8200,9500,15000,5200,
-6200,3500,1800,120,
-650,400,1200,900,
-500,2100,13500,4200
-],
-
-"Active":[
-441013,34512,23938,7875,
-1125,1603,902,2140,
-3100,5612,6200,3800,
-4100,5200,7200,2000,
-2600,1200,450,50,
-120,90,500,300,
-80,1000,6500,2500
-],
-
-"Child":[
-93.24,95.12,92.10,91.35,
-90.05,88.61,94.33,87.52,
-86.21,88.02,86.22,89.12,
-84.22,88.11,90.12,81.22,
-82.55,90.11,78.11,75.00,
-76.00,81.00,80.21,79.00,
-71.00,88.00,85.12,92.00
-],
-
-"Adult":[
-89.62,91.03,88.40,87.22,
-86.11,84.11,90.12,83.01,
-81.44,83.34,82.11,86.00,
-81.11,85.11,86.55,77.22,
-79.11,88.00,72.00,69.00,
-70.00,76.00,75.00,74.00,
-66.00,84.00,80.12,90.00
-],
-
-"Old":[
-81.45,83.21,80.11,78.44,
-76.98,74.33,82.54,73.21,
-71.32,72.45,71.11,75.11,
-70.00,74.00,75.55,66.00,
-68.00,80.00,62.00,55.00,
-58.00,60.00,64.00,61.00,
-53.00,76.00,69.00,82.00
-]
-}
-
-df = pd.DataFrame(data)
-
-# =========================================================
-# HEADER
-# =========================================================
-
-col1,col2=st.columns([5,1])
-
-with col1:
+if st.session_state.login == False:
 
     st.markdown("""
-    <h1 style='font-size:65px;color:white;font-weight:bold;'>
-    🦠 INDIA <span style='color:#00e5ff;'>COVID-19</span> DASHBOARD
-    </h1>
-    """,unsafe_allow_html=True)
+    <div class='title'>
+    🦠 INDIA COVID-19 LOGIN
+    </div>
+    """, unsafe_allow_html=True)
 
-with col2:
+    c1,c2,c3 = st.columns([1,2,1])
 
-    now=datetime.now()
+    with c2:
 
-    st.markdown(f"""
-    <h2 style='color:#00e5ff;text-align:right;'>
-    {now.strftime("%d %B %Y")}<br>
-    {now.strftime("%I:%M:%S %p")}
-    </h2>
-    """,unsafe_allow_html=True)
+        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
-# =========================================================
-# FILTERS
-# =========================================================
+        username = st.text_input(
+            "👤 Username",
+            placeholder="Enter Username"
+        )
 
-c1,c2,c3=st.columns(3)
+        password = st.text_input(
+            "🔒 Password",
+            type="password",
+            placeholder="Enter Password"
+        )
 
-with c1:
-    year=st.selectbox(
-        "📅 SELECT YEAR",
-        [2021,2022,2023]
-    )
+        if st.button("LOGIN"):
 
-with c2:
-    selected_state=st.selectbox(
-        "🔎 SEARCH STATE",
-        ["All India"]+states
-    )
+            if username == USERNAME and password == PASSWORD:
 
-with c3:
-    vaccine_state=st.selectbox(
-        "💉 VACCINE STATE SEARCH",
-        states
-    )
+                st.session_state.login = True
+                st.rerun()
+
+            else:
+                st.error("❌ Wrong Username or Password")
+
+        if st.button("Forgot Password"):
+            st.info("👤 Username : shivam")
+            st.info("🔒 Password : 1234")
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # =========================================================
-# YEAR FILTER
+# DASHBOARD
 # =========================================================
-
-if year == 2021:
-    df["Total"] = df["Cases_2021"]
-
-elif year == 2022:
-    df["Total"] = df["Cases_2022"]
-
-else:
-    df["Total"] = df["Cases_2023"]
-
-# =========================================================
-# FILTER DATA
-# =========================================================
-
-if selected_state=="All India":
-
-    total_cases=df["Total"].sum()
-    recovered_cases=df["Recovered"].sum()
-    death_cases=df["Deaths"].sum()
-    active_cases=df["Active"].sum()
 
 else:
 
-    row=df[df["State"]==selected_state].iloc[0]
-
-    total_cases=row["Total"]
-    recovered_cases=row["Recovered"]
-    death_cases=row["Deaths"]
-    active_cases=row["Active"]
-
-# =========================================================
-# CARDS
-# =========================================================
-
-a,b,c,d=st.columns(4)
-
-with a:
-    st.markdown(f"""
-    <div class='card cyan'>
-    <div style='font-size:50px;'>📈</div>
-    <h2>TOTAL CASES</h2>
-    <div class='big' style='color:#00e5ff;'>
-    {total_cases:,}
+    st.sidebar.markdown("""
+    <div class='sidebar-title'>
+    🦠 COVID-19
     </div>
-    </div>
-    """,unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-with b:
-    st.markdown(f"""
-    <div class='card green'>
-    <div style='font-size:50px;'>💚</div>
-    <h2>RECOVERED</h2>
-    <div class='big' style='color:#00ff66;'>
-    {recovered_cases:,}
-    </div>
-    </div>
-    """,unsafe_allow_html=True)
+    st.sidebar.markdown("## INDIA DASHBOARD")
 
-with c:
-    st.markdown(f"""
-    <div class='card pink'>
-    <div style='font-size:50px;'>💀</div>
-    <h2>DEATHS</h2>
-    <div class='big' style='color:#ff2ca8;'>
-    {death_cases:,}
-    </div>
-    </div>
-    """,unsafe_allow_html=True)
+    # =====================================================
+    # REAL STYLE DATA
+    # =====================================================
 
-with d:
-    st.markdown(f"""
-    <div class='card yellow'>
-    <div style='font-size:50px;'>🦠</div>
-    <h2>ACTIVE CASES</h2>
-    <div class='big' style='color:#ffd000;'>
-    {active_cases:,}
-    </div>
-    </div>
-    """,unsafe_allow_html=True)
+    df = pd.DataFrame({
 
-st.markdown("<br>",unsafe_allow_html=True)
+    "State":[
+    "Maharashtra","Kerala","Karnataka","Tamil Nadu",
+    "Delhi","Uttar Pradesh","Gujarat","Rajasthan"
+    ],
 
-# =========================================================
-# GRAPHS
-# =========================================================
+    "Cases":[
+    8232964,7012255,4309996,3690213,
+    2120755,2300455,1325222,1407557
+    ],
 
-g1,g2,g3=st.columns(3)
+    "Recovered":[
+    7850215,6824620,4258851,3956618,
+    2201212,2333251,1250000,1332417
+    ],
 
-with g1:
+    "Deaths":[
+    73892,7599,27027,25720,
+    11134,12092,15000,2728
+    ],
 
-    top=df.sort_values("Total",ascending=False).head(10)
+    "Active":[
+    441013,34512,23938,7875,
+    902,1603,7200,5612
+    ],
 
-    fig=px.bar(
-        top,
+    "Beds":[
+    120000,85000,90000,80000,
+    65000,95000,72000,70000
+    ],
+
+    "Oxygen":[
+    88,92,90,87,
+    85,91,89,86
+    ]
+
+    })
+
+    # =====================================================
+    # HEADER
+    # =====================================================
+
+    col1,col2 = st.columns([5,1])
+
+    with col1:
+
+        st.markdown("""
+        <h1 style='font-size:60px;color:white;font-weight:bold;'>
+        🦠 INDIA <span style='color:#00e5ff;'>COVID-19</span> DASHBOARD
+        </h1>
+        """, unsafe_allow_html=True)
+
+    with col2:
+
+        now = datetime.now()
+
+        st.markdown(f"""
+        <h3 style='color:#00e5ff;text-align:right;'>
+        📅 {now.strftime("%d %B %Y")}<br>
+        ⏰ {now.strftime("%I:%M:%S %p")}
+        </h3>
+        """, unsafe_allow_html=True)
+
+    # =====================================================
+    # CARDS
+    # =====================================================
+
+    total_cases = df["Cases"].sum()
+    recovered = df["Recovered"].sum()
+    deaths = df["Deaths"].sum()
+    active = df["Active"].sum()
+
+    a,b,c,d = st.columns(4)
+
+    with a:
+        st.markdown(f"""
+        <div class='card cyan'>
+        <h2>📈 TOTAL CASES</h2>
+        <div class='big'>{total_cases:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with b:
+        st.markdown(f"""
+        <div class='card green'>
+        <h2>💚 RECOVERED</h2>
+        <div class='big'>{recovered:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c:
+        st.markdown(f"""
+        <div class='card pink'>
+        <h2>💀 DEATHS</h2>
+        <div class='big'>{deaths:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d:
+        st.markdown(f"""
+        <div class='card yellow'>
+        <h2>🦠 ACTIVE</h2>
+        <div class='big'>{active:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # =====================================================
+    # HOSPITAL BEDS CHART
+    # =====================================================
+
+    bed_fig = px.bar(
+        df,
         x="State",
-        y="Total",
-        color="Total",
-        color_continuous_scale="Turbo",
-        title=f"📊 TOP 10 COVID CASES ({year})"
+        y="Beds",
+        color="Beds",
+        title="🏥 Hospital Beds Availability",
+        color_continuous_scale="Turbo"
     )
 
-    fig.update_layout(
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        title_font_size=28,
-        height=450
-    )
+    st.plotly_chart(bed_fig, use_container_width=True)
 
-    st.plotly_chart(fig,use_container_width=True)
+    # =====================================================
+    # OXYGEN CHART
+    # =====================================================
 
-with g2:
-
-    topd=df.sort_values("Deaths",ascending=False).head(10)
-
-    fig2=px.bar(
-        topd,
+    oxygen_fig = px.line(
+        df,
         x="State",
-        y="Deaths",
-        color="Deaths",
-        color_continuous_scale="Rainbow",
-        title=f"💀 TOP 10 DEATHS ({year})"
+        y="Oxygen",
+        markers=True,
+        title="🫁 Oxygen Level Monitoring"
     )
 
-    fig2.update_layout(
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        title_font_size=28,
-        height=450
+    st.plotly_chart(oxygen_fig, use_container_width=True)
+
+    # =====================================================
+    # NEWS SECTION
+    # =====================================================
+
+    st.markdown("## 📰 COVID NEWS")
+
+    st.info("India vaccination coverage increased successfully.")
+    st.info("COVID active cases reduced in multiple states.")
+    st.info("Government released updated health guidelines.")
+
+    # =====================================================
+    # ADMIN PANEL
+    # =====================================================
+
+    st.markdown("## ⚙️ ADMIN PANEL")
+
+    admin_name = st.text_input("Admin Name")
+    admin_password = st.text_input(
+        "Admin Password",
+        type="password"
     )
 
-    st.plotly_chart(fig2,use_container_width=True)
+    if st.button("Admin Login"):
 
-with g3:
+        if admin_name == "admin" and admin_password == "admin123":
+            st.success("✅ Admin Login Successful")
+        else:
+            st.error("❌ Wrong Admin Credentials")
 
-    row=df[df["State"]==vaccine_state].iloc[0]
+    # =====================================================
+    # USER SIGNUP
+    # =====================================================
 
-    fig3=go.Figure(
-        data=[
-            go.Pie(
-                labels=["Child","Adult","Old"],
-                values=[
-                    row["Child"],
-                    row["Adult"],
-                    row["Old"]
-                ],
-                hole=.55,
-                marker=dict(
-                    colors=[
-                        "#00e5ff",
-                        "#00ff66",
-                        "#ff2ca8"
-                    ]
-                )
-            )
-        ]
+    st.markdown("## 👤 USER SIGNUP")
+
+    new_user = st.text_input("Create Username")
+    new_pass = st.text_input(
+        "Create Password",
+        type="password"
     )
 
-    fig3.update_layout(
-        title={
-            "text":f"💉 VACCINATION COVERAGE IN {vaccine_state}",
-            "font":{"size":26,"color":"#ffd000"}
-        },
-        paper_bgcolor="#22388f",
-        plot_bgcolor="#22388f",
-        font_color="white",
-        height=450
+    if st.button("Signup"):
+        st.success(f"✅ User {new_user} Registered Successfully")
+
+    # =====================================================
+    # VOICE ASSISTANT
+    # =====================================================
+
+    st.markdown("## 🎤 VOICE ASSISTANT")
+
+    voice_text = st.text_input("Ask About COVID")
+
+    if st.button("Speak"):
+        st.success(f"🤖 Response: {voice_text}")
+
+    # =====================================================
+    # TABLE
+    # =====================================================
+
+    st.dataframe(
+        df.style.background_gradient(cmap="cool"),
+        use_container_width=True
     )
 
-    st.plotly_chart(fig3,use_container_width=True)
+    # =====================================================
+    # FOOTER
+    # =====================================================
 
-# =========================================================
-# MONTHLY TREND
-# =========================================================
-
-months=[
-"Jan","Feb","Mar","Apr",
-"May","Jun","Jul","Aug",
-"Sep","Oct","Nov","Dec"
-]
-
-cases=[
-100000,150000,300000,700000,
-600000,500000,450000,350000,
-300000,250000,200000,150000
-]
-
-trend=pd.DataFrame({
-"Month":months,
-"Cases":cases
-})
-
-fig4=px.line(
-trend,
-x="Month",
-y="Cases",
-markers=True,
-title=f"📈 MONTHLY COVID TREND ({year})",
-color_discrete_sequence=["#00e5ff"]
-)
-
-fig4.update_layout(
-paper_bgcolor="#22388f",
-plot_bgcolor="#22388f",
-font_color="white",
-title_font_size=30,
-height=500
-)
-
-st.plotly_chart(fig4,use_container_width=True)
-
-# =========================================================
-# TABLE
-# =========================================================
-
-st.markdown("""
-<h1 style='color:#00e5ff;'>
-INDIA COVID-19 DATA BY STATE
-</h1>
-""",unsafe_allow_html=True)
-
-st.dataframe(
-df.style.background_gradient(cmap="cool"),
-use_container_width=True,
-height=500
-)
-
-# =========================================================
-# DOWNLOAD CSV
-# =========================================================
-
-csv=df.to_csv(index=False).encode("utf-8")
-
-st.download_button(
-"⬇ DOWNLOAD COVID REPORT CSV",
-csv,
-"covid_report.csv",
-"text/csv"
-)
-
-# =========================================================
-# CHATBOT
-# =========================================================
-
-st.markdown("""
-<h1 style='
-color:#00e5ff;
-text-align:center;
-font-size:55px;
-font-weight:bold;
-margin-top:40px;
-'>
-🤖 COVID SAFETY CHATBOT
-</h1>
-""",unsafe_allow_html=True)
-
-msg=st.text_input(
-"Ask something about COVID"
-)
-
-if msg:
-
-    m=msg.lower()
-
-    if "mask" in m:
-        st.success("😷 Always wear mask in crowded places.")
-
-    elif "vaccine" in m:
-        st.success("💉 COVID vaccine helps reduce serious illness.")
-
-    elif "fever" in m:
-        st.warning("🤒 Consult doctor if fever continues.")
-
-    else:
-        st.info("✅ Stay safe and maintain hygiene.")
-
-# =========================================================
-# FOOTER
-# =========================================================
-
-st.markdown("""
-<div class='footer'>
-Developed By Shivam Kumar
-</div>
-""",unsafe_allow_html=True)
+    st.markdown("""
+    <div class='footer'>
+    Developed By Shivam Kumar
+    </div>
+    """, unsafe_allow_html=True)
