@@ -1,6 +1,6 @@
 # =========================================================
 # INDIA COVID-19 DASHBOARD
-# FINAL PROFESSIONAL VERSION
+# FINAL ULTIMATE VERSION
 # =========================================================
 
 import streamlit as st
@@ -41,8 +41,6 @@ background:#020f3a;
 color:white;
 }
 
-/* HIDE STREAMLIT */
-
 header{
 visibility:hidden;
 }
@@ -55,8 +53,6 @@ visibility:hidden;
 display:none;
 }
 
-/* MAIN */
-
 .block-container{
 padding-top:0rem;
 }
@@ -65,12 +61,13 @@ padding-top:0rem;
 
 section[data-testid="stSidebar"]{
 background:linear-gradient(180deg,#0a0066,#6a00ff);
-border-right:2px solid #00e5ff;
+border-right:3px solid #00e5ff;
+width:330px !important;
 }
 
 .sidebar-title{
 text-align:center;
-font-size:35px;
+font-size:40px;
 font-weight:bold;
 color:#00e5ff;
 text-shadow:0px 0px 20px #00e5ff;
@@ -214,9 +211,7 @@ if st.session_state.login == False:
 
         st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
-        username = st.text_input(
-            "👤 Username"
-        )
+        username = st.text_input("👤 Username")
 
         password = st.text_input(
             "🔒 Password",
@@ -243,22 +238,6 @@ if st.session_state.login == False:
 # =========================================================
 
 else:
-
-    # =====================================================
-    # SIDEBAR
-    # =====================================================
-
-    st.sidebar.markdown("""
-    <div class='sidebar-title'>
-    🦠 COVID-19
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.sidebar.success("✅ Dashboard Running")
-    st.sidebar.info("📅 Live Time Working")
-    st.sidebar.info("🗺 Map Visualization")
-    st.sidebar.info("🏥 Hospital Beds")
-    st.sidebar.info("🫁 Oxygen Availability")
 
     # =====================================================
     # DATA
@@ -355,8 +334,32 @@ else:
     74.2179,88.5122,78.6569,79.0193,
     91.9882,80.9462,79.0193,87.8550
     ]
-
     })
+
+    # =====================================================
+    # SIDEBAR
+    # =====================================================
+
+    st.sidebar.markdown("""
+    <div class='sidebar-title'>
+    🦠 COVID-19
+    </div>
+    """, unsafe_allow_html=True)
+
+    year = st.sidebar.selectbox(
+        "📅 SELECT YEAR",
+        [2021,2022,2023]
+    )
+
+    selected_state = st.sidebar.selectbox(
+        "🏙 SELECT STATE",
+        df["State"]
+    )
+
+    st.sidebar.success("✅ Dashboard Running")
+    st.sidebar.info("🗺 Map Visualization")
+    st.sidebar.info("🏥 Hospital Beds")
+    st.sidebar.info("🫁 Oxygen Availability")
 
     # =====================================================
     # HEADER
@@ -366,9 +369,9 @@ else:
 
     with col1:
 
-        st.markdown("""
+        st.markdown(f"""
         <h1 style='font-size:55px;color:#00e5ff;text-shadow:0px 0px 15px #00e5ff;'>
-        🦠 INDIA COVID-19 DASHBOARD
+        🦠 INDIA COVID-19 DASHBOARD ({year})
         </h1>
         """, unsafe_allow_html=True)
 
@@ -427,6 +430,63 @@ else:
         """, unsafe_allow_html=True)
 
     # =====================================================
+    # VACCINE STATUS
+    # =====================================================
+
+    st.markdown("<div class='heading'>💉 VACCINE STATUS</div>", unsafe_allow_html=True)
+
+    v1,v2,v3 = st.columns(3)
+
+    with v1:
+        st.markdown("""
+        <div class='card cyan'>
+        <h2>👶 CHILD VACCINE</h2>
+        <div class='big'>72%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with v2:
+        st.markdown("""
+        <div class='card green'>
+        <h2>🧑 ADULT VACCINE</h2>
+        <div class='big'>91%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with v3:
+        st.markdown("""
+        <div class='card pink'>
+        <h2>👴 OLD AGE VACCINE</h2>
+        <div class='big'>84%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # =====================================================
+    # CHATBOT
+    # =====================================================
+
+    st.markdown("<div class='heading'>🤖 COVID SAFETY CHATBOT</div>", unsafe_allow_html=True)
+
+    question = st.text_input("Ask About COVID Safety")
+
+    if st.button("ASK CHATBOT"):
+
+        if "mask" in question.lower():
+            st.success("😷 Always wear a mask.")
+
+        elif "covid" in question.lower():
+            st.success("🦠 Wash hands and stay safe.")
+
+        elif "vaccine" in question.lower():
+            st.success("💉 Vaccine reduces severe infection.")
+
+        elif "oxygen" in question.lower():
+            st.success("🫁 Oxygen level should stay above 95%.")
+
+        else:
+            st.success("✅ Stay safe and healthy.")
+
+    # =====================================================
     # GRAPH
     # =====================================================
 
@@ -444,7 +504,6 @@ else:
         paper_bgcolor="#22388f",
         plot_bgcolor="#22388f",
         font_color="white",
-        title_font_color="#00e5ff",
         height=600
     )
 
