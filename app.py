@@ -1,6 +1,5 @@
 # =========================================================
 # INDIA COVID-19 DASHBOARD
-# MAP + HOSPITAL BEDS + OXYGEN LEVEL
 # Developed By Shivam Kumar
 # =========================================================
 
@@ -18,6 +17,20 @@ st.set_page_config(
     page_icon="🦠",
     layout="wide"
 )
+
+# =========================================================
+# SESSION
+# =========================================================
+
+if "login" not in st.session_state:
+    st.session_state.login = False
+
+# =========================================================
+# LOGIN DATA
+# =========================================================
+
+USERNAME = "shivam"
+PASSWORD = "1234"
 
 # =========================================================
 # CSS
@@ -41,6 +54,67 @@ display:none;
 
 .block-container{
 padding-top:0rem;
+}
+
+/* LOGIN TITLE */
+
+.title{
+text-align:center;
+font-size:70px;
+font-weight:bold;
+color:#00e5ff;
+margin-top:10px;
+text-shadow:0px 0px 20px #00e5ff;
+}
+
+/* LOGIN BOX */
+
+.login-box{
+background:#142b75;
+padding:40px;
+border-radius:25px;
+border:3px solid #00e5ff;
+box-shadow:0px 0px 30px #00e5ff;
+margin-top:20px;
+}
+
+/* LABEL */
+
+label{
+color:#00e5ff !important;
+font-size:24px !important;
+font-weight:bold !important;
+}
+
+/* INPUT */
+
+div[data-baseweb="input"]{
+background:#142b75 !important;
+border:2px solid #00e5ff !important;
+border-radius:16px !important;
+box-shadow:0px 0px 12px #00e5ff !important;
+}
+
+div[data-baseweb="input"] input{
+background:transparent !important;
+color:white !important;
+font-size:22px !important;
+font-weight:bold !important;
+text-align:center !important;
+}
+
+/* BUTTON */
+
+.stButton>button{
+width:100%;
+height:55px;
+font-size:22px;
+font-weight:bold;
+background:#00e5ff;
+color:black;
+border:none;
+border-radius:14px;
+margin-top:15px;
 }
 
 /* SIDEBAR */
@@ -115,234 +189,350 @@ margin-top:40px;
 """, unsafe_allow_html=True)
 
 # =========================================================
-# SIDEBAR
+# LOGIN PAGE
 # =========================================================
 
-st.sidebar.markdown("""
-<div class='sidebar-title'>
-🦠 COVID-19
-</div>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("## INDIA DASHBOARD")
-
-# =========================================================
-# DATA
-# =========================================================
-
-df = pd.DataFrame({
-
-"State":[
-"Maharashtra","Kerala","Karnataka","Tamil Nadu",
-"Delhi","Uttar Pradesh","Bihar","Rajasthan"
-],
-
-"lat":[
-19.7515,10.8505,15.3173,11.1271,
-28.7041,26.8467,25.0961,27.0238
-],
-
-"lon":[
-75.7139,76.2711,75.7139,78.6569,
-77.1025,80.9462,85.3131,74.2179
-],
-
-"Cases":[
-8232964,7012255,4309996,3690213,
-2120755,2300455,1125110,1407557
-],
-
-"Recovered":[
-7850215,6824620,4258851,3956618,
-2201212,2333251,1055000,1332417
-],
-
-"Deaths":[
-73892,7599,27027,25720,
-11134,12092,12500,2728
-],
-
-"Active":[
-441013,34512,23938,7875,
-902,1603,6200,5612
-],
-
-"Beds":[
-120000,85000,90000,80000,
-65000,95000,72000,70000
-],
-
-"Oxygen":[
-88,92,90,87,
-85,91,89,86
-]
-
-})
-
-# =========================================================
-# HEADER
-# =========================================================
-
-col1,col2 = st.columns([5,1])
-
-with col1:
+if st.session_state.login == False:
 
     st.markdown("""
-    <h1 style='font-size:60px;color:white;font-weight:bold;'>
-    🦠 INDIA <span style='color:#00e5ff;'>COVID-19</span> DASHBOARD
-    </h1>
-    """, unsafe_allow_html=True)
-
-with col2:
-
-    now = datetime.now()
-
-    st.markdown(f"""
-    <h3 style='color:#00e5ff;text-align:right;'>
-    📅 {now.strftime("%d %B %Y")}<br>
-    ⏰ {now.strftime("%I:%M:%S %p")}
-    </h3>
-    """, unsafe_allow_html=True)
-
-# =========================================================
-# TOTAL
-# =========================================================
-
-total_cases = df["Cases"].sum()
-recovered = df["Recovered"].sum()
-deaths = df["Deaths"].sum()
-active = df["Active"].sum()
-
-# =========================================================
-# CARDS
-# =========================================================
-
-a,b,c,d = st.columns(4)
-
-with a:
-    st.markdown(f"""
-    <div class='card cyan'>
-    <h2>📈 TOTAL CASES</h2>
-    <div class='big'>{total_cases:,}</div>
+    <div class='title'>
+    🦠 INDIA COVID-19 LOGIN
     </div>
     """, unsafe_allow_html=True)
 
-with b:
-    st.markdown(f"""
-    <div class='card green'>
-    <h2>💚 RECOVERED</h2>
-    <div class='big'>{recovered:,}</div>
+    c1,c2,c3 = st.columns([1,2,1])
+
+    with c2:
+
+        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+
+        st.markdown("""
+        <h1 style='text-align:center;color:white;'>
+        LOGIN
+        </h1>
+        """, unsafe_allow_html=True)
+
+        username = st.text_input(
+            "👤 Username",
+            placeholder="Enter Username"
+        )
+
+        password = st.text_input(
+            "🔒 Password",
+            type="password",
+            placeholder="Enter Password"
+        )
+
+        if st.button("LOGIN"):
+
+            if username == USERNAME and password == PASSWORD:
+
+                st.session_state.login = True
+                st.rerun()
+
+            else:
+                st.error("❌ Wrong Username or Password")
+
+        if st.button("Forgot Password"):
+            st.info("👤 Username : shivam")
+            st.info("🔒 Password : 1234")
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# =========================================================
+# DASHBOARD
+# =========================================================
+
+else:
+
+    st.sidebar.markdown("""
+    <div class='sidebar-title'>
+    🦠 COVID-19
     </div>
     """, unsafe_allow_html=True)
 
-with c:
-    st.markdown(f"""
-    <div class='card pink'>
-    <h2>💀 DEATHS</h2>
-    <div class='big'>{deaths:,}</div>
+    st.sidebar.markdown("## INDIA DASHBOARD")
+
+    # =====================================================
+    # 28 STATES DATA
+    # =====================================================
+
+    df = pd.DataFrame({
+
+    "State":[
+    "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar",
+    "Chhattisgarh","Goa","Gujarat","Haryana",
+    "Himachal Pradesh","Jharkhand","Karnataka","Kerala",
+    "Madhya Pradesh","Maharashtra","Manipur","Meghalaya",
+    "Mizoram","Nagaland","Odisha","Punjab",
+    "Rajasthan","Sikkim","Tamil Nadu","Telangana",
+    "Tripura","Uttar Pradesh","Uttarakhand","West Bengal"
+    ],
+
+    "Cases":[
+    2345678,123456,987654,1125110,
+    765432,223344,1325222,1050112,
+    456789,567890,4309996,7012255,
+    1200112,8232964,223344,112233,
+    99887,88776,998877,910255,
+    1407557,77665,3690213,998877,
+    66554,2300455,223344,1500112
+    ],
+
+    "Recovered":[
+    2200000,120000,950000,1055000,
+    730000,210000,1250000,990000,
+    430000,550000,4258851,6824620,
+    1180000,7850215,210000,100000,
+    90000,80000,950000,890000,
+    1332417,70000,3956618,950000,
+    60000,2333251,210000,1450000
+    ],
+
+    "Deaths":[
+    14500,500,12000,12500,
+    8000,3500,15000,9500,
+    4000,5000,27027,73892,
+    13500,7599,1500,1200,
+    800,700,10000,8200,
+    2728,500,25720,8500,
+    400,12092,1300,16000
+    ],
+
+    "Active":[
+    31000,2956,25654,6200,
+    27432,9844,7200,5200,
+    2789,2890,23938,34512,
+    6500,441013,1844,1033,
+    908,807,18877,4100,
+    5612,7165,7875,20377,
+    6154,1603,2044,34112
+    ],
+
+    "Beds":[
+    85000,12000,35000,90000,
+    42000,10000,75000,50000,
+    25000,30000,95000,88000,
+    70000,120000,12000,15000,
+    10000,11000,60000,45000,
+    68000,8000,85000,65000,
+    12000,110000,20000,78000
+    ],
+
+    "Oxygen":[
+    91,88,90,89,
+    87,92,90,88,
+    86,87,93,94,
+    89,95,85,84,
+    83,82,90,88,
+    89,86,92,91,
+    85,94,87,90
+    ],
+
+    "lat":[
+    15.9129,28.2180,26.2006,25.0961,
+    21.2787,15.2993,22.2587,29.0588,
+    31.1048,23.6102,15.3173,10.8505,
+    22.9734,19.7515,24.6637,25.4670,
+    23.1645,26.1584,20.9517,31.1471,
+    27.0238,27.5330,11.1271,18.1124,
+    23.9408,26.8467,30.0668,22.9868
+    ],
+
+    "lon":[
+    79.7400,94.7278,92.9376,85.3131,
+    81.8661,74.1240,71.1924,76.0856,
+    77.1734,85.2799,75.7139,76.2711,
+    78.6569,75.7139,93.9063,91.3662,
+    92.9376,94.5624,85.0985,75.3412,
+    74.2179,88.5122,78.6569,79.0193,
+    91.9882,80.9462,79.0193,87.8550
+    ]
+
+    })
+
+    # =====================================================
+    # HEADER
+    # =====================================================
+
+    col1,col2 = st.columns([5,1])
+
+    with col1:
+
+        st.markdown("""
+        <h1 style='font-size:60px;color:white;font-weight:bold;'>
+        🦠 INDIA COVID-19 DASHBOARD
+        </h1>
+        """, unsafe_allow_html=True)
+
+    with col2:
+
+        now = datetime.now()
+
+        st.markdown(f"""
+        <h3 style='color:#00e5ff;text-align:right;'>
+        📅 {now.strftime("%d %B %Y")}<br>
+        ⏰ {now.strftime("%I:%M:%S %p")}
+        </h3>
+        """, unsafe_allow_html=True)
+
+    # =====================================================
+    # CARDS
+    # =====================================================
+
+    total_cases = df["Cases"].sum()
+    recovered = df["Recovered"].sum()
+    deaths = df["Deaths"].sum()
+    active = df["Active"].sum()
+
+    a,b,c,d = st.columns(4)
+
+    with a:
+        st.markdown(f"""
+        <div class='card cyan'>
+        <h2>📈 TOTAL CASES</h2>
+        <div class='big'>{total_cases:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with b:
+        st.markdown(f"""
+        <div class='card green'>
+        <h2>💚 RECOVERED</h2>
+        <div class='big'>{recovered:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c:
+        st.markdown(f"""
+        <div class='card pink'>
+        <h2>💀 DEATHS</h2>
+        <div class='big'>{deaths:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with d:
+        st.markdown(f"""
+        <div class='card yellow'>
+        <h2>🦠 ACTIVE</h2>
+        <div class='big'>{active:,}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # =====================================================
+    # COVID CASE GRAPH
+    # =====================================================
+
+    fig = px.bar(
+        df,
+        x="State",
+        y="Cases",
+        color="Cases",
+        title="📊 TOP COVID CASES",
+        color_continuous_scale="Turbo"
+    )
+
+    fig.update_layout(
+        paper_bgcolor="#22388f",
+        plot_bgcolor="#22388f",
+        font_color="white",
+        height=500
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # =====================================================
+    # INDIA MAP VISUALIZATION
+    # =====================================================
+
+    st.markdown("## 🗺 INDIA COVID MAP VISUALIZATION")
+
+    map_fig = px.scatter_mapbox(
+        df,
+        lat="lat",
+        lon="lon",
+        size="Cases",
+        color="Cases",
+        hover_name="State",
+        hover_data=["Beds","Oxygen"],
+        zoom=3.5,
+        height=600,
+        color_continuous_scale="Turbo"
+    )
+
+    map_fig.update_layout(
+        mapbox_style="carto-darkmatter",
+        paper_bgcolor="#22388f",
+        font_color="white",
+        margin={"r":0,"t":0,"l":0,"b":0}
+    )
+
+    st.plotly_chart(map_fig, use_container_width=True)
+
+    # =====================================================
+    # HOSPITAL BEDS CHART
+    # =====================================================
+
+    st.markdown("## 🏥 STATE WISE HOSPITAL BEDS")
+
+    beds_fig = px.bar(
+        df,
+        x="State",
+        y="Beds",
+        color="Beds",
+        color_continuous_scale="Turbo",
+        title="Hospital Beds Availability"
+    )
+
+    beds_fig.update_layout(
+        paper_bgcolor="#22388f",
+        plot_bgcolor="#22388f",
+        font_color="white",
+        height=600
+    )
+
+    st.plotly_chart(beds_fig, use_container_width=True)
+
+    # =====================================================
+    # OXYGEN AVAILABILITY CHART
+    # =====================================================
+
+    st.markdown("## 🫁 STATE WISE OXYGEN AVAILABILITY")
+
+    oxygen_fig = px.line(
+        df,
+        x="State",
+        y="Oxygen",
+        markers=True,
+        title="Oxygen Availability"
+    )
+
+    oxygen_fig.update_layout(
+        paper_bgcolor="#22388f",
+        plot_bgcolor="#22388f",
+        font_color="white",
+        height=600
+    )
+
+    st.plotly_chart(oxygen_fig, use_container_width=True)
+
+    # =====================================================
+    # TABLE
+    # =====================================================
+
+    st.dataframe(
+        df.style.background_gradient(cmap="cool"),
+        use_container_width=True
+    )
+
+    # =====================================================
+    # FOOTER
+    # =====================================================
+
+    st.markdown("""
+    <div class='footer'>
+    Developed By Shivam Kumar
     </div>
     """, unsafe_allow_html=True)
-
-with d:
-    st.markdown(f"""
-    <div class='card yellow'>
-    <h2>🦠 ACTIVE</h2>
-    <div class='big'>{active:,}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# =========================================================
-# MAP VISUALIZATION
-# =========================================================
-
-st.markdown("## 🗺 INDIA COVID MAP")
-
-map_fig = px.scatter_mapbox(
-    df,
-    lat="lat",
-    lon="lon",
-    size="Cases",
-    color="Cases",
-    hover_name="State",
-    hover_data=["Beds","Oxygen"],
-    zoom=3.5,
-    height=500,
-    color_continuous_scale="Turbo"
-)
-
-map_fig.update_layout(
-    mapbox_style="carto-darkmatter",
-    paper_bgcolor="#020f3a",
-    font_color="white",
-    margin={"r":0,"t":0,"l":0,"b":0}
-)
-
-st.plotly_chart(map_fig, use_container_width=True)
-
-# =========================================================
-# HOSPITAL BEDS CHART
-# =========================================================
-
-st.markdown("## 🏥 HOSPITAL BEDS AVAILABLE")
-
-bed_fig = px.bar(
-    df,
-    x="State",
-    y="Beds",
-    color="Beds",
-    title="State Wise Hospital Beds",
-    color_continuous_scale="Turbo"
-)
-
-bed_fig.update_layout(
-    paper_bgcolor="#22388f",
-    plot_bgcolor="#22388f",
-    font_color="white",
-    height=500
-)
-
-st.plotly_chart(bed_fig, use_container_width=True)
-
-# =========================================================
-# OXYGEN LEVEL CHART
-# =========================================================
-
-st.markdown("## 🫁 OXYGEN AVAILABILITY")
-
-oxygen_fig = px.line(
-    df,
-    x="State",
-    y="Oxygen",
-    markers=True,
-    title="State Wise Oxygen Availability"
-)
-
-oxygen_fig.update_layout(
-    paper_bgcolor="#22388f",
-    plot_bgcolor="#22388f",
-    font_color="white",
-    height=500
-)
-
-st.plotly_chart(oxygen_fig, use_container_width=True)
-
-# =========================================================
-# TABLE
-# =========================================================
-
-st.dataframe(
-    df.style.background_gradient(cmap="cool"),
-    use_container_width=True
-)
-
-# =========================================================
-# FOOTER
-# =========================================================
-
-st.markdown("""
-<div class='footer'>
-Developed By Shivam Kumar
-</div>
-""", unsafe_allow_html=True)
